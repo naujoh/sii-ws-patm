@@ -8,7 +8,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Path("/ws-alumno")
+@Path("/alumno")
 public class WSStudent {
 
     @POST
@@ -34,7 +34,8 @@ public class WSStudent {
     }
 
     @GET
-    @Path("/students")
+    @Path("/lista")
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Student> getListOfStudents() {
         Student student = new Student();
         return student.getStudents();

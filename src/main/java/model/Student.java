@@ -20,7 +20,7 @@ public class Student {
     private String secondLastName;
     private String email;
     private String controlNumber;
-    private int careerId;
+    private Career career;
     private DBConnection dbConnection;
     private Connection connection;
 
@@ -80,19 +80,19 @@ public class Student {
     }
 
     @XmlElement(required = true)
-    public int getCareerId() {
-        return careerId;
+    public Career getCareer() {
+        return career;
     }
 
-    public void setCareerId(int careerId) {
-        this.careerId = careerId;
+    public void setCareer(Career career) {
+        this.career = career;
     }
 
     public void insert() {
         dbConnection = new DBConnection();
         connection = dbConnection.getConnection();
         String query = "INSERT INTO Alumno(noControl, nombre, apePaterno, apeMaterno, email, idCarrera) " +
-                "values('"+controlNumber+"','"+name+"','"+firstLastName+"','"+secondLastName+"','"+email+"',"+careerId+")";
+                "values('"+controlNumber+"','"+name+"','"+firstLastName+"','"+secondLastName+"','"+email+"',"+career.getCareerId()+")";
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(query);
@@ -103,12 +103,11 @@ public class Student {
     public void update() {
         dbConnection = new DBConnection();
         connection = dbConnection.getConnection();
-        String query = "UPDATE Alumno SET noControl = '"+controlNumber+"', nombre = '"+name+"', " +
-                "apePaterno='"+firstLastName+"', " + "apeMaterno='"+secondLastName+"', email='"+email+"', " +
-                "idCarrera = "+ careerId;
         try {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
+            statement.executeUpdate("UPDATE Alumno SET noControl = '"+controlNumber+"', nombre = '"+name+"', " +
+                    "apePaterno='"+firstLastName+"', " + "apeMaterno='"+secondLastName+"', email='"+email+"', " +
+                    "idCarrera = "+ career.getCareerId() + " WHERE idAlumno = " + studentId);
             connection.close();
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -116,10 +115,9 @@ public class Student {
     public void delete() {
         dbConnection = new DBConnection();
         connection = dbConnection.getConnection();
-        String query = "DELETE FROM Alumno WHERE idAlumno="+studentId;
         try {
             Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
+            statement.executeUpdate("DELETE FROM Alumno WHERE idAlumno="+studentId);
             connection.close();
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -141,9 +139,12 @@ public class Student {
                 student.firstLastName = resultSet.getString("apePaterno");
                 student.secondLastName = resultSet.getString("apeMaterno");
                 student.email = resultSet.getString("email");
-                student.careerId = resultSet.getInt("idCarrera");
+                student.career = new Career();
+                student.career.setCareerId(resultSet.getInt("idCarrera"));
+                student.career.setCareer();
                 students.add(student);
             }
+            connection.close();
         } catch (Exception e) { e.printStackTrace(); }
         return students;
     }
