@@ -64,8 +64,9 @@ public class User {
         connection = dbConnection.getConnection();
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM usuario WHERE usuario='"+username+"' AND contrasena='"+password+"'");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM usuario WHERE usuario='"+username+"' AND contrasena= '"+password+"'");
             if(resultSet.next()) {
+                userId = resultSet.getInt("idusuario");
                 Access access = new Access();
                 token = access.insert(username);
             } else {

@@ -12,6 +12,8 @@ public class Access {
     private int accessId;
     private Date init_date;
     private Date end_date;
+    DBConnection dbConnection;
+    Connection connection;
 
     public int getAccessId() {
         return accessId;
@@ -39,8 +41,8 @@ public class Access {
 
     public String insert(String username) {
         String token;
-        DBConnection dbConnection = new DBConnection();
-        Connection connection = dbConnection.getConnection();
+        dbConnection = new DBConnection();
+        connection = dbConnection.getConnection();
         try {
             token = generateToken(username);
             Statement statement = connection.createStatement();
@@ -79,5 +81,22 @@ public class Access {
             hash += Integer.toHexString(b);
         }
         return hash;
+    }
+
+    public boolean validateToken(String token) {
+        dbConnection = new DBConnection();
+        connection = dbConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM accesos WHERE token = '"+token+"' AND now() BETWEEN fecha_inicio AND fecha_fin");
+            if(resultSet.next()) {
+                connection.close();
+                return true;
+            } else {
+                connection.close();
+                return false;
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return false;
     }
 }
