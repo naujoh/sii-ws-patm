@@ -12,6 +12,7 @@ public class Access {
     private int accessId;
     private Date init_date;
     private Date end_date;
+    private String sourceIp;
     DBConnection dbConnection;
     Connection connection;
 
@@ -39,15 +40,23 @@ public class Access {
         this.end_date = end_date;
     }
 
-    public String insert(String username) {
+    public String getSourceIp() {
+        return sourceIp;
+    }
+
+    public void setSourceIp(String sourceIp) {
+        this.sourceIp = sourceIp;
+    }
+
+    public String insert(String username, String sourceIp) {
         String token;
         dbConnection = new DBConnection();
         connection = dbConnection.getConnection();
         try {
             token = generateToken(username);
             Statement statement = connection.createStatement();
-            statement.executeUpdate("INSERT INTO accesos(token, fecha_inicio, fecha_fin) " +
-                    "values('"+token+"', now(), now() + interval '30 minutes')");
+            statement.executeUpdate("INSERT INTO accesos(token, fecha_inicio, fecha_fin, ip_origen) " +
+                    "values('"+token+"', now(), now() + interval '30 minutes', '"+sourceIp+"')");
         } catch (Exception e) { e.printStackTrace(); token = "Access error"; }
         return token;
     }

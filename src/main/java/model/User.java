@@ -1,5 +1,6 @@
 package model;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.annotation.XmlElement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,7 +15,6 @@ public class User {
 
     private DBConnection dbConnection;
     private Connection connection;
-
 
     public int getUserId() {
         return userId;
@@ -59,7 +59,7 @@ public class User {
         this.token = token;
     }
 
-    public void validateUser() {
+    public void validateUser(HttpServletRequest request) {
         dbConnection = new DBConnection();
         connection = dbConnection.getConnection();
         try {
@@ -68,7 +68,7 @@ public class User {
             if(resultSet.next()) {
                 userId = resultSet.getInt("idusuario");
                 Access access = new Access();
-                token = access.insert(username);
+                token = access.insert(username, Server.getClientIpAddr(request));
             } else {
                 token = "Denied access";
             }
